@@ -1,0 +1,4 @@
+int	solve(char **map)
+{
+	;
+}
