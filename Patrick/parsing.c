@@ -40,9 +40,7 @@ bool	input_check(char **map)
 bool	find_empty_line(char *str)
 {
 	int		i;
-	char	c;
 
-	c = '1';
 	i = 0;
 	while (str[i])
 	{
