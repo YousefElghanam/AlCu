@@ -6,6 +6,8 @@ OBJ_DIR = objects/
 
 CFLAGS = -Wall -Wextra -Werror -Ilibft
 
+DEBUG_CFLAGS = -DVERBOSE=1
+
 HEADERS = pipex.h pipex_bonus.h libft/libft.h
 
 SOURCES = main.c parsing.c algo.c
@@ -15,6 +17,9 @@ OBJECTS = $(SOURCES:.c=.o)
 LIBFT = libft/libft.a
 
 all: $(NAME)
+
+debug: $(VERBOSE)
+	$(CC) $(OBJECTS) $(LIBFT) $(DEBUG_CFLAGS) -o $(NAME)
 
 $(NAME): $(LIBFT) $(OBJECTS)
 	$(CC) $(OBJECTS) $(LIBFT) -o $(NAME)

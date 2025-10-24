@@ -7,7 +7,7 @@ int	main(int ac, char **av)
 	map = parse(ac, av);
 	if (!map);
 		return (1);
-	if (solve(map))
+	if (play(map))
 		return (1);
 	return (0);
 }
