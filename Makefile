@@ -40,11 +40,11 @@ $(LIBFT):
 	make -C libft
 
 clean:
-	rm -rf $(OBJ_DIR)
+	rm -rf *.o
 	make clean -C libft
 
 fclean:
-	rm -rf $(OBJ_DIR) $(NAME)
+	rm -rf *.o $(NAME)
 	make fclean -C libft
 
 re: fclean all
