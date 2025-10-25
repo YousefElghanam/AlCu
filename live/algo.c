@@ -143,6 +143,9 @@ int	check_heap(long *heaps, size_t heap_count, int is_player)
 	return (0);
 }
 
+#define PLAYER 1
+#define AI 0
+
 int	play(char **map)
 {
 	size_t	heap_count;
@@ -157,19 +160,19 @@ int	play(char **map)
 			return (free(heaps), 1);
 		if (solve_cur_map(heaps, &heap_count))
 			return (free(heaps), 1);
-		if (check_heap(heaps, heap_count, 0))
+		if (check_heap(heaps, heap_count, AI))
 			return (free(heaps), 0);
 		remove_empty_heap(heaps, &heap_count);
-		if (check_heap(heaps, heap_count, 0))
+		if (check_heap(heaps, heap_count, AI))
 			return (free(heaps), 0);
 		if (draw(heaps, heap_count))
 			return (free(heaps), 1);
 		if (take_input(heaps, &heap_count))
 			return (free(heaps), 1);
-		if (check_heap(heaps, heap_count, 1))
+		if (check_heap(heaps, heap_count, PLAYER))
 			return (free(heaps), 0);
 		remove_empty_heap(heaps, &heap_count);
-		if (check_heap(heaps, heap_count, 1))
+		if (check_heap(heaps, heap_count, PLAYER))
 			return (free(heaps), 0);
 	}
 }
