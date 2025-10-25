@@ -10,7 +10,7 @@ DEBUG_CFLAGS = -DVERBOSE=1
 
 HEADERS = alcu.h libft/libft.h
 
-SOURCES = main.c parsing.c 
+SOURCES = main.c parsing.c utils.c
 
 OBJECTS = $(SOURCES:.c=.o)
 

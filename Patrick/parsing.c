@@ -4,6 +4,14 @@
 #include <string.h>
 
 
+void	error_msg(char *str)
+{
+	if (!str)
+		return ;
+	write(2, str, ft_strlen(str));
+}
+
+
 static bool	check_datatyp(char *str)
 {
 	int		i;
@@ -79,6 +87,8 @@ char	**extract_map(char *map_path)
 	char	**map;
 	int		fd;
 
+	if(!map_path || map_path[0] == '\0')
+		return (error_msg(ERROR), NULL);
 	fd = open(map_path, O_RDONLY);
 	if (fd == -1)
 		return (NULL);
@@ -145,7 +155,7 @@ char **parse(int ac, char **av)
 	else if (ac == 2) // input ./alum1 maps/map1.map
 	{
 		if (!check_datatyp(av[1]))
-			return (write(2, "ERROR\n", 6), NULL);
+			return (error_msg(ERROR), NULL);
 		map = extract_map(av[1]);
 		if (!map)
 			return (NULL);
@@ -154,7 +164,7 @@ char **parse(int ac, char **av)
 		//map = {"8", "5", "2", "1" NULL};
 	}
 	if (!input_check(map))
-		return (write(2, "ERROR\n", 6), ft_freesplit(map), NULL);
+		return (error_msg(ERROR), ft_freesplit(map), NULL);
 	return (map);
 }
 

@@ -2,6 +2,7 @@
 # define ALCU_H
 
 #define BUFFER_SIZE 100000
+#define ERROR "ERROR\n"
 
 #ifndef VERBOSE
 # define VERBOSE 0
@@ -19,5 +20,12 @@ void	perror_alloc(void);
 
 char	**parse(int ac, char **av);
 int		play(char **map);
+
+
+// Patrick
+
+void	ft_freesplit(char **split);
+size_t	count_lines(char **split);
+
 
 #endif
