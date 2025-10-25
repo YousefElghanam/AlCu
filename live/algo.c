@@ -6,6 +6,8 @@ int	draw(long *heaps, size_t heap_count)
 
 	for (size_t x = 0; x < heap_count; x++)
 	{
+		if (heap_count == SIZE_MAX)
+			break ;
 		i = 0;
 		printf("[%li]: ", heaps[x]);
 		while (i++ < heaps[x])
@@ -28,6 +30,8 @@ long	*make_heaps(char **map, size_t *count)
 	long	*heaps;
 
 	heap_count = 0;
+	if (!*map)
+		return (NULL);
 	while(map[heap_count])
 		heap_count++;
 	heaps = malloc(sizeof(long) * (heap_count + 1));
@@ -84,7 +88,7 @@ int	take_input(long *heaps, size_t *heap_count)
 	while (1)
 	{
 		ft_memset(input, 0, 10001);
-		bytes_read = read(0, input, 10000);
+		bytes_read = read(1, input, 10000);
 		if (bytes_read == -1)
 			return (ft_printf(2, "read error\n"), 1);
 		if (bytes_read == 0)
@@ -136,8 +140,6 @@ int	check_heap(long *heaps, size_t heap_count, int is_player)
 		return (ft_printf(1, "You lose\n"), 1);
 	else if (heap_count == 0 && !is_player)
 		return (ft_printf(1, "You win\n"), 1);
-	// if (heap_count == 1 && heaps[0] == 1)
-	// 	return (ft_printf(1, "You win\n"), 0);
 	return (0);
 }
 
@@ -155,6 +157,8 @@ int	play(char **map)
 			return (free(heaps), 1);
 		if (solve_cur_map(heaps, &heap_count))
 			return (free(heaps), 1);
+		if (check_heap(heaps, heap_count, 0))
+			return (free(heaps), 0);
 		remove_empty_heap(heaps, &heap_count);
 		if (check_heap(heaps, heap_count, 0))
 			return (free(heaps), 0);
@@ -162,6 +166,8 @@ int	play(char **map)
 			return (free(heaps), 1);
 		if (take_input(heaps, &heap_count))
 			return (free(heaps), 1);
+		if (check_heap(heaps, heap_count, 1))
+			return (free(heaps), 0);
 		remove_empty_heap(heaps, &heap_count);
 		if (check_heap(heaps, heap_count, 1))
 			return (free(heaps), 0);

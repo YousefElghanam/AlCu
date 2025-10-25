@@ -152,6 +152,8 @@ char **parse(int ac, char **av)
 			}
             map[i++] = line;
         }
+		if (!line)
+			return (ft_freesplit(map), NULL);
 	}
 	else if (ac == 2) // input ./alum1 maps/map1.map
 	{
