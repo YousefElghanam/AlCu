@@ -1,6 +1,6 @@
 #include "alcu.h"
 
-int	draw(long *heaps, size_t heap_count)
+int	draw(long *heaps, size_t heap_count, long *win_lose_arr)
 {
 	long	i;
 
@@ -9,7 +9,7 @@ int	draw(long *heaps, size_t heap_count)
 		if (heap_count == SIZE_MAX)
 			break ;
 		i = 0;
-		printf("[%li]: ", heaps[x]);
+		printf("[%li]	: ", heaps[x]);
 		while (i++ < heaps[x])
 			printf("| ");
 		printf("\n");
@@ -63,20 +63,47 @@ void think(void)
 	}
 }
 
-int	solve_cur_map(long *heaps, size_t *heap_count)
+int	base_take_lose(long items)
 {
-	// think();
-	if (heaps[*heap_count - 1] >= 1)
-	{
-		heaps[*heap_count - 1] -= 1;
-		if (heaps[*heap_count - 1] == 0)
-		{
-			heaps[*heap_count - 1] = -1;
-			*heap_count -= 1;
-		}		// heap_count--;
-		return (ft_printf(1, "AI takes 1\n"), 0);
-	}
-	return (1);
+	if (items == 1 || items == 2 || items == 3)
+		return (items);
+	else if (items % 4 == 1)
+		return (1);
+	else if (items % 4 == 2)
+		return (2);
+	else if (items % 4 == 3)
+		return (3);
+	else
+		return (1);
+}
+
+int	base_take_win(long items)
+{
+	if ((items % 4 ) == 3)
+		return (2);
+	else if (items % 4 == 0)
+		return (3);
+	else
+		return (1);
+}
+
+int	calc_moves(long *heaps, size_t heap_count, long *win_lose_arr)
+{
+	if (win_lose_arr[heap_count - 1] == WIN)
+		return (base_take_win(heaps[heap_count - 1]));
+	else
+		return (base_take_lose(heaps[heap_count - 1]));
+}
+
+int	solve_cur_map(long *heaps, size_t *heap_count, long *win_lose_arr)
+{
+	think();
+	int		moves = 1;
+
+	moves = calc_moves(heaps, *heap_count, win_lose_arr);
+	heaps[*heap_count - 1] -= moves;
+	ft_printf(1, "AI takes %i\n", moves);
+	return (0);
 }
 
 int	take_input(long *heaps, size_t *heap_count)
@@ -97,12 +124,9 @@ int	take_input(long *heaps, size_t *heap_count)
 		input_int = ft_atoi_but_better(input);
 		if (input_int == 2147483648 || input_int < 1 || input_int > 3)
 		{
-			printf("Player entered %zi\n", input_int);
 			ft_printf(1, "Invalid input, please enter a number between 1 and 3\n");
 			continue ;
 		}
-		// if (input_int < heaps[*heap_count - 1] && *heap_count == 1)
-		// 	return (ft_printf(1, "AI takes %d\nYou lose\n", heaps[*heap_count - 1] - input_int), 0);
 		if (input_int > heaps[*heap_count - 1])
 		{
 			ft_printf(1, "Not enough items in current heap, please enter a number between 1 and 3\n");
@@ -124,10 +148,8 @@ int	take_input(long *heaps, size_t *heap_count)
 
 void	remove_empty_heap(long *heaps, size_t *heap_count)
 {
-	// printf("cur heap is %li === heap_count is %zu\n", heaps[*heap_count - 1], *heap_count);
 	if (heaps[*heap_count - 1] == 0)
 	{
-		// printf("removed empty heap, heap_count is now %zu\n", *heap_count - 1);
 		heaps[*heap_count - 1] = -1;
 		*heap_count -= 1;
 	}
@@ -143,36 +165,65 @@ int	check_heap(long *heaps, size_t heap_count, int is_player)
 	return (0);
 }
 
-#define PLAYER 1
-#define AI 0
+long	*calc_win_lose_arr(long *heaps, size_t heap_count)
+{
+	long	*arr;
+
+	arr = malloc(sizeof(long) * heap_count);
+	if (!arr)
+		return (NULL);
+	arr[0] = WIN;
+	for (size_t i = 1; i < heap_count; i++)
+	{
+		if (arr[i - 1] == WIN)
+		{
+			if (heaps[i - 1] % 4 == 1)
+				arr[i] = LOSE;
+			else
+				arr[i] = WIN;
+		}
+		else if (arr[i - 1] == LOSE)
+		{
+			if (heaps[i - 1] >= 4 && heaps[i - 1] % 4 == 0) 
+				arr[i] = LOSE;
+			else
+				arr[i] = WIN;
+		}
+	}
+	return (arr);
+}
 
 int	play(char **map)
 {
 	size_t	heap_count;
 	long	*heaps;
+	long	*win_lose_arr;
 
 	heaps = make_heaps(map, &heap_count);
 	if (!heaps)
-		return (1);
+		return (perror_alloc(), 1);
+	win_lose_arr = calc_win_lose_arr(heaps, heap_count);
+	if (!win_lose_arr)
+		return (free(heaps), perror_alloc(), 1);
 	while (1)
 	{
-		if (draw(heaps, heap_count))
-			return (free(heaps), 1);
-		if (solve_cur_map(heaps, &heap_count))
-			return (free(heaps), 1);
+		if (draw(heaps, heap_count, win_lose_arr))
+			return (free(heaps), free(win_lose_arr), 1);
+		if (solve_cur_map(heaps, &heap_count, win_lose_arr))
+			return (free(heaps), free(win_lose_arr), 1);
 		if (check_heap(heaps, heap_count, AI))
-			return (free(heaps), 0);
+			return (free(heaps), free(win_lose_arr), 0);
 		remove_empty_heap(heaps, &heap_count);
 		if (check_heap(heaps, heap_count, AI))
-			return (free(heaps), 0);
-		if (draw(heaps, heap_count))
-			return (free(heaps), 1);
+			return (free(heaps), free(win_lose_arr), 0);
+		if (draw(heaps, heap_count, win_lose_arr))
+			return (free(heaps), free(win_lose_arr), 1);
 		if (take_input(heaps, &heap_count))
-			return (free(heaps), 1);
+			return (free(heaps), free(win_lose_arr), 1);
 		if (check_heap(heaps, heap_count, PLAYER))
-			return (free(heaps), 0);
+			return (free(heaps), free(win_lose_arr), 0);
 		remove_empty_heap(heaps, &heap_count);
 		if (check_heap(heaps, heap_count, PLAYER))
-			return (free(heaps), 0);
+			return (free(heaps), free(win_lose_arr), 0);
 	}
 }

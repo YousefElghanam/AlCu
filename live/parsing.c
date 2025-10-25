@@ -63,7 +63,7 @@ bool	input_check(char **map)
 			return (false);
 		i++;
 	}
-	if (!map[0])
+	if (i >= 500000 || !map[0])
 		return (false);
 	return (true);
 }
@@ -98,6 +98,8 @@ char	**extract_map(char *map_path)
 	if (bytes <= 0)
 		return (close(fd), NULL);
 	line[bytes] = '\0';
+	if (!find_empty_line(line))
+		return (error_msg(ERROR), close(fd), NULL);
 	map = ft_split(line, '\n');
 	if (!map)
 		return (close(fd), NULL);
@@ -139,7 +141,7 @@ char **parse(int ac, char **av)
 	map = NULL;
 	if (ac == 1)	//input ./alum1 < maps/map1.map
 	{		
-		map = calloc(10000, sizeof(char *));
+		map = ft_calloc(10000, sizeof(char *));
 		if (!map)
 			return (NULL);
 		char *line;

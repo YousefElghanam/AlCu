@@ -3,6 +3,10 @@
 
 #define BUFFER_SIZE 100000
 #define ERROR "ERROR\n"
+#define WIN 1
+#define LOSE 0
+#define PLAYER 1
+#define AI 0
 
 #ifndef VERBOSE
 # define VERBOSE 0

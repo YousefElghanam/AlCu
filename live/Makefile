@@ -4,7 +4,7 @@ CC = cc
 
 OBJ_DIR = objects/
 
-CFLAGS = -Wall -Wextra -Werror -Ilibft -g
+CFLAGS = -Ilibft -g
 
 DEBUG_CFLAGS = -DVERBOSE=1
 
