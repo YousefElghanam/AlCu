@@ -63,6 +63,8 @@ bool	input_check(char **map)
 			return (false);
 		i++;
 	}
+	if (!map[0])
+		return (false);
 	return (true);
 }
 
@@ -153,7 +155,7 @@ char **parse(int ac, char **av)
             map[i++] = line;
         }
 		if (!line)
-			return (ft_freesplit(map), NULL);
+			return (error_msg(ERROR), ft_freesplit(map), NULL);
 	}
 	else if (ac == 2) // input ./alum1 maps/map1.map
 	{
