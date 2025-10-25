@@ -1,5 +1,26 @@
 
 #include "alcu.h"
+#include <stdlib.h>
+#include <string.h>
+
+
+static bool	check_datatyp(char *str)
+{
+	int		i;
+	size_t	len;
+
+	len = ft_strlen(str) - 4;
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '/' && str[i + 1] == '.')
+			return (false);
+		i++;
+	}
+	if (!ft_strncmp(&str[len], ".map", 4))
+		return (true);
+	return (false);
+}
 
 static bool	number_check(char *str)
 {
@@ -28,10 +49,10 @@ bool	input_check(char **map)
 	while (map[i])
 	{
 		if (!number_check(map[i]))
-			return (printf("numbercheck\n"), false);
+			return (false);
 		num = ft_atoi(map[i]);
 		if (num <= 0 || num > 10000)
-			return (printf("0 or biggger than 10000\n"),false);
+			return (false);
 		i++;
 	}
 	return (true);
@@ -65,92 +86,75 @@ char	**extract_map(char *map_path)
 	if (bytes <= 0)
 		return (close(fd), NULL);
 	line[bytes] = '\0';
-	if (!find_empty_line(line))
-		return (close (fd), NULL);
 	map = ft_split(line, '\n');
 	if (!map)
 		return (close(fd), NULL);
 	return (close(fd), map);
 }
 
-char *line(int fd)
-{
 
-	static char	buf[BUFFER_SIZE];
-	static int	i = 0, bytes= 0;
-	char	*line;
-	int	j = 0;
-	if (!(line = calloc(10000, 1)))
-		return (NULL);
-	while (1)
+char *ft_line(int fd)
+{
+    char *line = (char *)malloc(BUFFER_SIZE + 1);
+    int i = 0;
+    char c;
+    int bytes;
+
+    if (!line)
+        return NULL;
+    while ((bytes = read(fd, &c, 1)) > 0)
+    {
+        if (c == '\n')
+			break;
+        if (i < BUFFER_SIZE)    // einfache Kapazitätsgrenze
+            line[i++] = c;
+        else
+            break;
+    }
+    if (bytes <= 0 && i == 0)
 	{
-		if (i >= bytes)
-		{
-			i = 0;
-			bytes= read(fd, buf, BUFFER_SIZE);
-			if (bytes <= 0)
-			{
-				if (bytes < 0)
-					return (free(line), perror("Error"), NULL);
-				break ;
-			}
-		}
-		line[j++] = buf[i++];
-		if (line[j - 1] == '\n')
-			break ;
-	}
-	if (j)
-	{
-		line[j] = '\0';
-		printf("%s", line);
-		return (line);
-	}
-	else
-	{
-		free(line);
-		line = NULL;
-		i = 0;
-		bytes = 0;
-		return (NULL);
-	}
+        free(line);
+        return NULL;
+    }
+    line[i] = '\0';
+    return line;
 }
 
 char **parse(int ac, char **av)
 {
-	char **map = NULL;
+	char **map;	
+	
+	if (ac == 1)	//input ./alum1 < maps/map1.map
+	{		
+		map = calloc(10000, sizeof(char *));
+		if (!map)
+			return (NULL);
+		char *line;
+		int i = 0;
 
-	if (ac == 1)
-	{
-		char buffer[BUFFER_SIZE];
-		int bytes = 0;
-		while (1)
-		{
-			bytes = read(0, buffer, BUFFER_SIZE);
-			if (bytes <= 0)
+		while ((line = ft_line(0)) != NULL)
+        {
+            if (line[0] == '\0')
 			{
-				if (bytes < 0)
-					return (NULL);
-				break ;
+				free(line);
+				break;
 			}
-			buffer[bytes] = '\0';
-			if (buffer[0] == '\n')
-				break ;
-		}
-		printf("%s", buffer);
-		return (ft_split(buffer, '\n'));
+            map[i++] = line;
+        }
 	}
 	else if (ac == 2) // input ./alum1 maps/map1.map
 	{
+		if (!check_datatyp(av[1]))
+			return (write(2, "ERROR\n", 6), NULL);
 		map = extract_map(av[1]);
 		if (!map)
 			return (NULL);
-		if (!input_check(map))
-			return (write(2, "ERROR\n", 6), NULL);
 		if (VERBOSE)
 			printf("valid map\n");
 		//map = {"8", "5", "2", "1" NULL};
 	}
-
+	if (!input_check(map))
+		return (write(2, "ERROR\n", 6), ft_freesplit(map), NULL);
 	return (map);
 }
 
