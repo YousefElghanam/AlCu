@@ -167,7 +167,7 @@ char **parse(int ac, char **av)
 		if (!map)
 			return (NULL);
 		if (VERBOSE)
-			printf("valid map\n");
+			printf("\tvalid map\n");
 		//map = {"8", "5", "2", "1" NULL};
 	}
 	if (!input_check(map))

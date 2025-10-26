@@ -3,6 +3,11 @@
 
 #define BUFFER_SIZE 100000
 #define ERROR "ERROR\n"
+#define INVALID "invalid input\n"
+#define ALLOC_ERR "allocation error\n"
+#define READ_ERR "read error\n"
+
+
 #define WIN 1
 #define LOSE 0
 #define PLAYER 1
@@ -20,7 +25,7 @@
 #include "libft/libft.h"
 
 /* utils */
-void	perror_alloc(void);
+void	error_msg(char *str);
 
 char	**parse(int ac, char **av);
 int		play(char **map);
