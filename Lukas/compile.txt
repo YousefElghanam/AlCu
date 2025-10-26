@@ -1,0 +1,1 @@
+cc visualizer.c -lncurses -o vis
