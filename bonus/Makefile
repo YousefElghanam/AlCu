@@ -4,11 +4,7 @@ CC = cc
 
 OBJ_DIR = objects/
 
-CFLAGS = -Ilibft -g
-
-DEBUG_CFLAGS = -DVERBOSE=1
-
-HEADERS = pipex.h pipex_bonus.h libft/libft.h
+CFLAGS = -Wall -Wextra -Werror -Ilibft
 
 SOURCES = main.c parsing.c algo.c utils.c
 
@@ -18,11 +14,12 @@ LIBFT = libft/libft.a
 
 all: $(NAME)
 
-debug: $(VERBOSE)
-	$(CC) $(OBJECTS) $(LIBFT) $(DEBUG_CFLAGS) -o $(NAME)
+debug: CFLAGS = -Wall -Wextra -Werror -lncurses -g -DVERBOSE=1
+debug:
+	make re
 
 $(NAME): $(LIBFT) $(OBJECTS)
-	$(CC) $(OBJECTS) $(LIBFT) -o $(NAME)
+	$(CC) $(OBJECTS) $(LIBFT) -lncurses -o $(NAME)
 
 $(OBJ_DIR)%.o: %.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -o $@ -c $<
