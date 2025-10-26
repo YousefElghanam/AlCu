@@ -12,8 +12,6 @@ int	main(int ac, char **av)
 			return (1);
 		if (play(map))
 			return (1); 
-		/* for(int i = 0; map[i]; i++)
-			printf("%s\n", map[i]); */
 		ft_freesplit(map);
 		return (0);
 	}

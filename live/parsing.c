@@ -167,8 +167,7 @@ char **parse(int ac, char **av)
 		if (!map)
 			return (NULL);
 		if (VERBOSE)
-			printf("\tvalid map\n");
-		//map = {"8", "5", "2", "1" NULL};
+			ft_putendl_fd("\tvalid map", 1);
 	}
 	if (!input_check(map))
 		return (error_msg(ERROR), ft_freesplit(map), NULL);
